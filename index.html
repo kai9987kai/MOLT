@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101613">
+  <meta name="description" content="A local, deterministic lab for studying synthetic memory through tissue loss, regrowth, and ecological change.">
+  <title>MOLT — Memory Ecology Lab</title>
+  <link rel="stylesheet" href="styles.css">
+  <script type="module" src="src/app.js"></script>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="#top" aria-label="MOLT Lab home">
+        <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+        <span><strong>MOLT</strong><small>MEMORY ECOLOGY LAB</small></span>
+      </a>
+      <nav class="top-nav" aria-label="Main navigation">
+        <a class="active" href="#study">Study</a>
+        <a href="#organisms">Organisms</a>
+        <a href="#ledger">Evidence ledger</a>
+      </nav>
+      <div class="top-meta">
+        <span class="local-badge"><span class="live-dot"></span> LOCAL · SYNTHETIC</span>
+        <button class="icon-button" id="exportJson" type="button" aria-label="Export the selected study as JSON" title="Export study JSON">↗</button>
+      </div>
+    </header>
+
+    <main id="top">
+      <section class="intro" id="study">
+        <div>
+          <div class="eyebrow"><span>FIELD NOTE 01</span><span class="eyebrow-line"></span><span>REGENERATIVE MEMORY</span></div>
+          <h1>What can a body remember<br class="desktop-break"> after it rebuilds itself?</h1>
+          <p class="intro-copy">Condition a synthetic organism, alter where its memory lives, then follow its choices into a changing world.</p>
+        </div>
+        <div class="run-stamp">
+          <span class="stamp-label">CURRENT PROTOCOL</span>
+          <strong id="protocolId">MOLT-0000</strong>
+          <span id="runStatus" class="status-pill"><i></i> DEMO RUN</span>
+        </div>
+      </section>
+
+      <div class="phase-track" aria-label="Study phases">
+        <div class="phase done"><span>01</span><div><strong>Condition</strong><small>paired / unpaired cue</small></div></div>
+        <div class="phase-connector"></div>
+        <div class="phase done"><span>02</span><div><strong>Intervene</strong><small>remove / replace tissue</small></div></div>
+        <div class="phase-connector"></div>
+        <div class="phase current"><span>03</span><div><strong>Regrow</strong><small>read the surviving trace</small></div></div>
+        <div class="phase-connector"></div>
+        <div class="phase"><span>04</span><div><strong>Rewild</strong><small>test in a changed ecology</small></div></div>
+      </div>
+
+      <div class="workspace-grid">
+        <aside class="panel design-panel" aria-labelledby="designTitle">
+          <div class="panel-heading">
+            <div><span class="section-index">A / DESIGN</span><h2 id="designTitle">Study protocol</h2></div>
+            <span class="lock-state" id="lockState">EDITABLE</span>
+          </div>
+          <p class="panel-intro">Every run uses matched seeds. Both memory strategies encounter the same cues, injuries, and world changes.</p>
+
+          <label class="field-label" for="training">Cue training</label>
+          <select class="select-control" id="training">
+            <option value="paired">Paired · cue predicts outcome</option>
+            <option value="unpaired">Unpaired · matched event counts</option>
+            <option value="reversed">Reversed · cue predicts opposite</option>
+          </select>
+          <div class="field-hint">The unpaired control balances cue and outcome counts.</div>
+
+          <label class="field-label" for="intervention">Tissue intervention</label>
+          <select class="select-control" id="intervention">
+            <option value="head">Remove head · regrow from trunk</option>
+            <option value="turnover">Replace 25% of cells</option>
+            <option value="graft">Graft cells from a yoked twin</option>
+            <option value="sham">Sham · no tissue loss</option>
+          </select>
+          <div class="field-hint" id="interventionHint">New head cells begin without the learned trace.</div>
+
+          <div class="range-field">
+            <div class="range-label"><label class="field-label" for="fidelity">Cue stability in test world</label><output id="fidelityOutput">90%</output></div>
+            <input class="range-control" id="fidelity" type="range" min="0" max="100" step="5" value="90">
+            <div class="range-ends"><span>World flips</span><span>World stable</span></div>
+          </div>
+
+          <div class="field-row">
+            <div><label class="field-label" for="seed">Base seed</label><input class="text-control" id="seed" type="number" min="1" max="2147483646" value="82417"></div>
+            <div><label class="field-label" for="replicates">Matched seeds</label><select class="select-control" id="replicates"><option>8</option><option selected>16</option><option>24</option><option>40</option></select></div>
+          </div>
+
+          <div class="protocol-note"><span class="note-symbol">◎</span><p><strong>Two arms, one starting world.</strong> A head-locked trace is compared with a distributed body trace. The controller and exposure schedule are held constant.</p></div>
+
+          <div class="button-stack">
+            <button class="button-primary" id="runStudy" type="button"><span>Lock protocol &amp; run</span><span class="button-arrow">→</span></button>
+            <button class="button-secondary" id="editProtocol" type="button" disabled>Start a new protocol</button>
+          </div>
+          <div class="protocol-caption">Locking records the exact settings and seed range in this session's ledger.</div>
+        </aside>
+
+        <section class="main-column" id="organisms" aria-labelledby="worldTitle">
+          <div class="panel world-panel">
+            <div class="panel-heading world-heading">
+              <div><span class="section-index">B / ORGANISMS</span><h2 id="worldTitle">Two bodies, one world</h2></div>
+              <div class="world-legend"><span><i class="legend-dot central-dot"></i>Head-locked</span><span><i class="legend-dot distributed-dot"></i>Distributed</span></div>
+            </div>
+            <div class="world-pair">
+              <figure class="world-card central-card">
+                <figcaption><span><i class="legend-dot central-dot"></i>HEAD-LOCKED TRACE</span><span class="world-tag" id="centralTag">AMPUTATED</span></figcaption>
+                <canvas id="centralCanvas" aria-label="Synthetic ecosystem for the head-locked memory arm"></canvas>
+                <div class="tissue-readout"><span class="tissue-label">TISSUE TRACE</span><div class="cell-strip" id="centralCells" aria-label="Head-locked organism tissue cells"></div><span class="trace-value" id="centralTrace">0.00</span></div>
+              </figure>
+              <figure class="world-card distributed-card">
+                <figcaption><span><i class="legend-dot distributed-dot"></i>DISTRIBUTED TRACE</span><span class="world-tag" id="distributedTag">REGENERATED</span></figcaption>
+                <canvas id="distributedCanvas" aria-label="Synthetic ecosystem for the distributed memory arm"></canvas>
+                <div class="tissue-readout"><span class="tissue-label">TISSUE TRACE</span><div class="cell-strip" id="distributedCells" aria-label="Distributed-memory organism tissue cells"></div><span class="trace-value" id="distributedTrace">0.00</span></div>
+              </figure>
+            </div>
+            <div class="world-footer"><span><i class="world-key resource-key"></i>resource cue</span><span><i class="world-key hazard-key"></i>hazard cue</span><span class="world-footer-note" id="worldCaption">Matched ecology · seed 82417</span></div>
+          </div>
+
+          <div class="metric-grid" aria-live="polite">
+            <article class="metric-card">
+              <div class="metric-top"><span>MEMORY RETENTION</span><span class="metric-glyph">⌁</span></div>
+              <div class="metric-value" id="retentionValue">—<small>%</small></div>
+              <div class="metric-foot"><span id="retentionDelta">Run a protocol to compare</span><span class="metric-spark spark-green">···</span></div>
+            </article>
+            <article class="metric-card">
+              <div class="metric-top"><span>CHOICE ADVANTAGE</span><span class="metric-glyph">↗</span></div>
+              <div class="metric-value" id="choiceValue">—<small>pp</small></div>
+              <div class="metric-foot"><span id="choiceDelta">Distributed − head-locked</span><span class="metric-spark spark-blue">···</span></div>
+            </article>
+            <article class="metric-card">
+              <div class="metric-top"><span>ALIVE AT END</span><span class="metric-glyph">✳</span></div>
+              <div class="metric-value" id="survivalValue">—<small>%</small></div>
+              <div class="metric-foot"><span id="survivalDelta">Across all test organisms</span><span class="metric-spark spark-amber">···</span></div>
+            </article>
+            <article class="metric-card confidence-card">
+              <div class="metric-top"><span>PAIRED SEEDS</span><span class="metric-glyph">#</span></div>
+              <div class="metric-value" id="seedValue">—<small>n</small></div>
+              <div class="metric-foot"><span id="intervalText">95% paired bootstrap interval</span><span class="interval-mark">↔</span></div>
+            </article>
+          </div>
+        </section>
+
+        <aside class="panel analysis-panel" aria-labelledby="analysisTitle">
+          <div class="panel-heading">
+            <div><span class="section-index">C / READOUT</span><h2 id="analysisTitle">Evidence, not lore</h2></div>
+            <span class="analysis-icon">◉</span>
+          </div>
+          <div class="result-callout" id="resultCallout">
+            <span class="callout-mark">↗</span>
+            <div><strong id="resultTitle">Waiting for a locked run</strong><p id="resultText">A demo seed is shown. Lock a protocol to create a new paired result.</p></div>
+          </div>
+          <div class="arm-readout">
+            <div class="arm-row"><span class="arm-dot central-dot"></span><span class="arm-name">Head-locked</span><strong id="centralAccuracy">—</strong><small>choice accuracy</small></div>
+            <div class="arm-row"><span class="arm-dot distributed-dot"></span><span class="arm-name">Distributed</span><strong id="distributedAccuracy">—</strong><small>choice accuracy</small></div>
+          </div>
+          <div class="chart-block">
+            <div class="chart-title"><strong>CHOICE ACCURACY</strong><span>by test exposure</span></div>
+            <div id="accuracyChart" class="accuracy-chart" role="img" aria-label="Paired arm choice accuracy by test exposure"></div>
+            <div class="chart-legend"><span><i class="legend-dot central-dot"></i>Head-locked</span><span><i class="legend-dot distributed-dot"></i>Distributed</span></div>
+          </div>
+          <div class="audit-box">
+            <div class="audit-heading"><span class="audit-icon">⊙</span><strong>MODEL CHECK</strong><span class="audit-tag">INTERNAL</span></div>
+            <div class="audit-row"><span>Forecast calibration</span><strong id="calibrationValue">—</strong></div>
+            <p id="auditText">The controller's expected cue success is compared with its observed choices. This is a model check, not a consciousness measure.</p>
+          </div>
+          <div class="scope-line"><span>MODEL SCOPE</span><strong>synthetic 12-cell organism · 2D toy ecology</strong></div>
+        </aside>
+      </div>
+
+      <section class="panel ledger-panel" id="ledger" aria-labelledby="ledgerTitle">
+        <div class="panel-heading ledger-heading">
+          <div><span class="section-index">D / SEARCHABLE RECORD</span><h2 id="ledgerTitle">Experiment ledger</h2></div>
+          <div class="ledger-actions"><label class="search-wrap"><span aria-hidden="true">⌕</span><input id="ledgerSearch" type="search" placeholder="Filter: arm:distributed seed:82417" aria-label="Filter experiment ledger"></label><button class="button-outline" id="exportCsv" type="button">Export CSV <span>↓</span></button></div>
+        </div>
+        <div class="query-hint">Filter fields: <code>arm</code>, <code>seed</code>, <code>intervention</code>, <code>training</code>, <code>fate</code>. Words also match run notes.</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>RUN / SEED</th><th>ARM</th><th>MEMORY LAYOUT</th><th>INTERVENTION</th><th>RETENTION</th><th>CHOICE</th><th>FATE</th></tr></thead>
+            <tbody id="ledgerBody"><tr><td colspan="7" class="empty-row">The demo ledger will appear here when the local study is ready.</td></tr></tbody>
+          </table>
+        </div>
+        <div class="ledger-footer"><span id="ledgerCount">0 records</span><span>Runs are held in this browser session until exported.</span></div>
+      </section>
+
+      <footer class="app-footer">
+        <div><span class="footer-mark">M</span><span>MODELLED SYSTEM · NOT BIOLOGICAL EVIDENCE</span></div>
+        <div><a href="docs/protocol.md">Protocol</a><a href="docs/influence-map.md">Influence map</a><a href="README.md">Project notes</a></div>
+      </footer>
+    </main>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  </div>
+</body>
+</html>
